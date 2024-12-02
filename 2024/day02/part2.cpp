@@ -4,8 +4,36 @@
 
 using namespace std;
 
+bool isSafe(vector<int> reactorReport) {
+  bool increasing = (reactorReport[1] > reactorReport[0]);
+  for (int i = 1; i < reactorReport.size(); i++) {
+    if (abs(reactorReport[i] - reactorReport[i - 1]) > 3 ||
+        reactorReport[i] == reactorReport[i - 1] ||
+        (increasing && reactorReport[i] < reactorReport[i - 1]) ||
+        (!increasing && reactorReport[i] > reactorReport[i - 1])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool isSafeWithProblemDampener(vector<int> reactorReport) {
+  if (isSafe(reactorReport)) {
+    return true;
+  }
+  for (int i = 0; i < reactorReport.size(); i++) {
+    vector<int> reactorReportCopy(reactorReport.begin(), reactorReport.end());
+    reactorReportCopy.erase(reactorReportCopy.begin() + i);
+    if (isSafe(reactorReportCopy)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 int main() {
-  freopen("sample_input.txt", "r", stdin);
+  freopen("input.txt", "r", stdin);
   string line;
   vector<int> reactorReport;
   string currValue = "";
@@ -23,21 +51,9 @@ int main() {
       reactorReport.push_back(stoi(currValue));
       currValue = "";
     }
-    bool increasing = (reactorReport[1] > reactorReport[0]);
-    // cout << reactorReport[0] << " ";
-    for (int i = 1; i < reactorReport.size(); i++) {
-      // cout << reactorReport[i] << " ";
-      if (abs(reactorReport[i] - reactorReport[i - 1]) > 3 ||
-          reactorReport[i] == reactorReport[i - 1] ||
-          (increasing && reactorReport[i] < reactorReport[i - 1]) ||
-          (!increasing && reactorReport[i] > reactorReport[i - 1])) {
-        ans--;
-        // cout << "NOT SAFE ";
-        break;
-      }
+    if (isSafeWithProblemDampener(reactorReport)) {
+      ans++;
     }
-    // cout << endl;
-    ans++;
     reactorReport.clear();
   }
 
